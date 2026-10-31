@@ -1,15 +1,15 @@
-# SigmaOS-backup-tool
+# SigmaOS Backup Tool
 
-Part of the SigmaOS multi-repository architecture.
+This crate exposes backup and snapshot APIs, but the current
+`SovereignBackupToolEngine` stores archive records in memory. Its archive
+creation uses a fixed timestamp and estimated deduplication ratio; restore only
+checks whether an ID is present. It does not read user files, encrypt archive
+contents, or restore data.
 
-## Principles
-- MODULARITY: Single responsibility per repository
-- LOOSE COUPLING: Minimal dependencies between repos
-- INTERFACE SEGREGATION: Clear, focused public APIs
-- DETERMINISTIC TESTING: Comprehensive test coverage
+Treat record-level tests as model checks, not backup integrity or recovery
+evidence. Real use needs durable storage, cryptographic implementation, and a
+restore drill against isolated test data.
 
 ## License
-SPDX-License-Identifier: GPL-3.0-or-later
 
-## Copyright
-Copyright (C) 2026 SigmaOS Project
+GPL-3.0-or-later. See [`LICENSE`](LICENSE) and [`Cargo.toml`](Cargo.toml).
