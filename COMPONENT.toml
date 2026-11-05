@@ -1,0 +1,16 @@
+[component]
+name = "SigmaOS-backup-tool"
+tier = 2
+stability = "scaffold"
+language = "rust"
+description = "User personal files backup, dotfiles exporter, and installed package list archiver"
+upstream = ["https://github.com/linuxmint/mintbackup"]
+
+[contract]
+provides = ["personal-backup-tool", "package-list-exporter", "dotfiles-backup"]
+depends_on = []
+
+[maturity]
+status = "Scaffold"
+test_evidence = "Compiles and passes AAA unit tests"
+next_milestone = "Hardware and runtime integration"
