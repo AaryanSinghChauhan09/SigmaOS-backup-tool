@@ -3,12 +3,12 @@ name = "SigmaOS-backup-tool"
 tier = 2
 stability = "scaffold"
 language = "rust"
-description = "User personal files backup, dotfiles exporter, and installed package list archiver"
+description = "Backup / restore with manifest & verification"
 upstream = ["https://github.com/linuxmint/mintbackup"]
 
 [contract]
 provides = ["personal-backup-tool", "package-list-exporter", "dotfiles-backup"]
-depends_on = []
+depends_on = ["SigmaOS-system"]
 
 [maturity]
 status = "Scaffold"
