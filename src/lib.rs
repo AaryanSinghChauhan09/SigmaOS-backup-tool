@@ -74,7 +74,7 @@ impl BackupToolRunner {
                 Ok(format!("schedule set to {}", cron_expr))
             }
             BackupCommand::Config { key, value } => {
-                self.config.insert(key, value);
+                self.config.insert(key.clone(), value);
                 Ok(format!("config set {}={}", key, self.config.get(&key).unwrap()))
             }
         }
