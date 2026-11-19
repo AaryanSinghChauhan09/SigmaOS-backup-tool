@@ -1,9 +1,15 @@
 [package]
-name = "sigmaos_backup_tool"
+name = "SigmaOS-backup-tool"
 version = "0.1.0"
 edition = "2021"
-description = "User personal files backup, dotfiles exporter, and installed package list archiver"
+license = "Apache-2.0"
+description = "SigmaOS sigmaos_backup_tool component"
 
 [lib]
 name = "sigmaos_backup_tool"
 path = "src/lib.rs"
+
+[dependencies]
+thiserror = "1"
+
+[dev-dependencies]

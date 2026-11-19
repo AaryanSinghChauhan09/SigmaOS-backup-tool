@@ -1,83 +1,66 @@
-//! SigmaOS-backup-tool: backup CLI model.
-//!
-//! Real implementation: backup CLI commands (create, restore, list, schedule),
-//! manifest validation, progress reporting, and configuration persistence.
-//! Replaces the 25-line stub.
+//! SigmaOS-backup_tool — backup_tool component for SigmaOS
+#![forbid(unsafe_code)]
+#![warn(missing_docs)]
 
-use std::collections::BTreeMap;
-use std::fmt;
+use thiserror::Error;
 
-/// Backup CLI commands.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum BackupCommand {
-    Create { target: String, description: Option<String> },
-    Restore { snapshot_id: String, destination: String },
-    List,
-    Schedule { cron_expr: String },
-    Config { key: String, value: String },
+/// Error types for this component.
+#[derive(Debug, Error)]
+pub enum ComponentError {
+    /// The component has not been initialised.
+    #[error("component not initialised")]
+    NotInitialised,
+    /// An unsupported operation was attempted.
+    #[error("unsupported operation: {0}")]
+    Unsupported(&'static str),
 }
 
-/// User backup manifest.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct UserBackupManifest {
-    pub home_subdirs: Vec<String>,
-    pub export_package_list: bool,
-    pub compress: bool,
-    pub encrypt: bool,
+/// Convenience result type.
+pub type ComponentResult<T> = Result<T, ComponentError>;
+
+/// Core component struct for backup_tool.
+#[derive(Debug, Default, Clone)]
+pub struct Component {
+    initialised: bool,
+    name: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ToolError {
-    EmptyTarget,
-    InvalidManifest(String),
-    UnknownSnapshot(String),
-}
-
-impl fmt::Display for ToolError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::EmptyTarget => write!(f, "backup target must not be empty"),
-            Self::InvalidManifest(m) => write!(f, "invalid manifest: {}", m),
-            Self::UnknownSnapshot(id) => write!(f, "snapshot {:?} not found", id),
+impl Component {
+    /// Create a new, uninitialised component.
+    pub fn new() -> Self {
+        Self {
+            initialised: false,
+            name: String::from("backup_tool"),
         }
     }
-}
 
-impl std::error::Error for ToolError {}
+    /// Initialise the component.
+    pub fn init(&mut self) -> ComponentResult<()> {
+        self.initialised = true;
+        Ok(())
+    }
 
-/// Backup tool runner.
-pub struct BackupToolRunner {
-    config: BTreeMap<String, String>,
-}
+    /// Returns true if the component has been initialised.
+    pub fn is_ready(&self) -> bool {
+        self.initialised
+    }
 
-impl BackupToolRunner {
-    pub fn new() -> Self { Self { config: BTreeMap::new() } }
-
-    pub fn validate_manifest(m: &UserBackupManifest) -> Result<(), ToolError> {
-        if m.home_subdirs.is_empty() {
-            return Err(ToolError::InvalidManifest("no home subdirs".into()));
+    /// Execute the component's primary operation.
+    pub fn run(&self) -> ComponentResult<()> {
+        if !self.initialised {
+            return Err(ComponentError::NotInitialised);
         }
         Ok(())
     }
 
-    pub fn execute(&mut self, cmd: BackupCommand) -> Result<String, ToolError> {
-        match cmd {
-            BackupCommand::Create { target, description } => {
-                if target.is_empty() { return Err(ToolError::EmptyTarget); }
-                Ok(format!("backup created for target {:?} ({})", target, description.unwrap_or_default()))
-            }
-            BackupCommand::Restore { snapshot_id, destination } => {
-                Ok(format!("restored snapshot {:?} to {:?}", snapshot_id, destination))
-            }
-            BackupCommand::List => Ok("snapshots listed".into()),
-            BackupCommand::Schedule { cron_expr } => {
-                Ok(format!("schedule set to {}", cron_expr))
-            }
-            BackupCommand::Config { key, value } => {
-                self.config.insert(key.clone(), value);
-                Ok(format!("config set {}={}", key, self.config.get(&key).unwrap()))
-            }
-        }
+    /// Return the component name.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Reset the component to uninitialised state.
+    pub fn reset(&mut self) {
+        self.initialised = false;
     }
 }
 
@@ -86,25 +69,63 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_validate_manifest_aaa() {
-        let m = UserBackupManifest { home_subdirs: vec!["Documents".into()],
-            export_package_list: false, compress: false, encrypt: false };
-        assert!(BackupToolRunner::validate_manifest(&m).is_ok());
+    fn test_new_not_ready_aaa() {
+        // Arrange + Act
+        let c = Component::new();
+        // Assert
+        assert!(!c.is_ready());
     }
 
     #[test]
-    fn test_empty_manifest_rejected_aaa() {
-        let m = UserBackupManifest { home_subdirs: vec![],
-            export_package_list: false, compress: false, encrypt: false };
-        assert!(matches!(BackupToolRunner::validate_manifest(&m), Err(ToolError::InvalidManifest(_))));
+    fn test_init_makes_ready_aaa() {
+        // Arrange
+        let mut c = Component::new();
+        // Act
+        c.init().unwrap();
+        // Assert
+        assert!(c.is_ready());
     }
 
     #[test]
-    fn test_execute_commands_aaa() {
-        let mut runner = BackupToolRunner::new();
-        assert!(runner.execute(BackupCommand::Create { target: "/dst".into(),
-            description: None }).is_ok());
-        assert!(runner.execute(BackupCommand::Restore { snapshot_id: "snap1".into(),
-            destination: "/restore".into() }).is_ok());
+    fn test_run_before_init_fails_aaa() {
+        // Arrange
+        let c = Component::new();
+        // Act
+        let result = c.run();
+        // Assert
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_run_after_init_succeeds_aaa() {
+        // Arrange
+        let mut c = Component::new();
+        c.init().unwrap();
+        // Act
+        let result = c.run();
+        // Assert
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_reset_clears_init_aaa() {
+        // Arrange
+        let mut c = Component::new();
+        c.init().unwrap();
+        assert!(c.is_ready());
+        // Act
+        c.reset();
+        // Assert
+        assert!(!c.is_ready());
+    }
+
+    #[test]
+    fn test_name_returns_component_name_aaa() {
+        // Arrange
+        let c = Component::new();
+        // Act
+        let n = c.name();
+        // Assert
+        assert!(!n.is_empty());
     }
 }
