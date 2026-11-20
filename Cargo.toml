@@ -1,15 +1,32 @@
 [package]
-name = "SigmaOS-backup-tool"
+name = "sigmaos_backup_tool"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.75"
+authors = ["SigmaOS Contributors"]
+description = "SigmaOS component: SigmaOS-backup-tool"
+repository = "https://github.com/AaryanSinghChauhan09/SigmaOS-backup-tool"
 license = "Apache-2.0"
-description = "SigmaOS sigmaos_backup_tool component"
+keywords = ["sigmaos", "os", "systems"]
+categories = ["os"]
+publish = false
 
 [lib]
-name = "sigmaos_backup_tool"
+name = "sigmaos_backup_tool_lib"
 path = "src/lib.rs"
+crate-type = ["rlib"]
 
 [dependencies]
-thiserror = "1"
+thiserror = "1.0"
+log = "0.4"
 
 [dev-dependencies]
+pretty_assertions = "1.4"
+
+[features]
+default = []
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

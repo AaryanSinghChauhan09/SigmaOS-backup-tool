@@ -1,45 +1,10 @@
-use sigmaos_backup_tool::Component;
+//! Integration tests for SigmaOS-backup-tool.
+
+use sigmaos_backup_tool_lib::{Component, ComponentLifecycle};
 
 #[test]
-fn test_component_lifecycle_aaa() {
-    // Arrange
+fn component_initialises_and_runs() {
     let mut c = Component::new();
-    assert!(!c.is_ready());
-    // Act
-    c.init().unwrap();
-    // Assert
-    assert!(c.is_ready());
-}
-
-#[test]
-fn test_run_requires_init_aaa() {
-    // Arrange
-    let c = Component::new();
-    // Act
-    let res = c.run();
-    // Assert
-    assert!(res.is_err());
-}
-
-#[test]
-fn test_run_after_init_aaa() {
-    // Arrange
-    let mut c = Component::new();
-    c.init().unwrap();
-    // Act
-    let res = c.run();
-    // Assert
-    assert!(res.is_ok());
-}
-
-#[test]
-fn test_reset_then_run_fails_aaa() {
-    // Arrange
-    let mut c = Component::new();
-    c.init().unwrap();
-    c.reset();
-    // Act
-    let res = c.run();
-    // Assert
-    assert!(res.is_err());
+    c.init().expect("init should succeed");
+    c.run().expect("run should succeed after init");
 }

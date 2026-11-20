@@ -3,14 +3,14 @@ name = "SigmaOS-backup-tool"
 tier = 2
 stability = "scaffold"
 language = "rust"
-description = "Backup / restore with manifest & verification"
-upstream = ["https://github.com/linuxmint/mintbackup"]
+description = "System backup tool (full/incremental/differential, encryption, scheduling)"
+upstream = []
 
 [contract]
-provides = ["personal-backup-tool", "package-list-exporter", "dotfiles-backup"]
-depends_on = ["SigmaOS-system"]
+provides = ["sigmabackup"]
+depends_on = []
 
 [maturity]
-status = "Implemented"
+status = "Scaffold"
 test_evidence = "Compiles and passes AAA unit tests"
 next_milestone = "Hardware and runtime integration"

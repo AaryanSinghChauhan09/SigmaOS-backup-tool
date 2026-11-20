@@ -1,10 +1,15 @@
 # SigmaOS-backup-tool
 
-Backup / restore with manifest & verification
+System backup tool (full/incremental/differential, encryption, scheduling)
 
-- **Category:** Utilities
-- **Engine:** backup
+- **Category:** System Services
+- **Engine:** backup-tool
+- **Tier:** 2
 - **Language:** Rust
+- **Provides:** sigmabackup
+
+Part of the [SigmaOS](https://github.com/AaryanSinghChauhan09/SigmaOS)
+multi-repository component ecosystem.
 
 ## Build & Test
 
@@ -13,4 +18,13 @@ cargo build
 cargo test
 ```
 
-Part of the SigmaOS multi-repository component ecosystem.
+## Contract
+
+This component declares its interface in `COMPONENT.toml`:
+
+- `provides` — capabilities other components may depend on
+- `depends_on` — component names this component requires
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE).
